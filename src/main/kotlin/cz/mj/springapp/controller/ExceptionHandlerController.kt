@@ -3,6 +3,7 @@ package cz.mj.springapp.controller
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.http.HttpStatus
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -29,6 +30,11 @@ class GlobalControllerExceptionHandler {
     @ResponseBody
     fun methodArgumentNotValidExceptionHandler(e: MethodArgumentNotValidException): List<String?> =
         e.allErrors.map { it.defaultMessage }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AuthorizationDeniedException::class)
+    @ResponseBody
+    fun authorizationDeniedExceptionHandler(e: Exception): String? = e.message
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)

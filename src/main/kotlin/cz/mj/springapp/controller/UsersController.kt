@@ -7,11 +7,13 @@ import jakarta.validation.Valid
 import org.jooq.exception.NoDataFoundException
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/users")
 class UsersController(private val userService: UserService) {
+    @PreAuthorize("#id == authentication.principal.getId()")
     @GetMapping("/{id}")
     fun getUser(@PathVariable id: Int): UserDto {
         try {
@@ -34,6 +36,7 @@ class UsersController(private val userService: UserService) {
             throw UserNotCreatedException("Nepodařilo se vytvořit uživatele")
     }
 
+    @PreAuthorize("#id == authentication.principal.getId()")
     @PutMapping("/{id}")
     fun putUser(@PathVariable id: Int, @RequestBody @Valid user: UserUpdateDto) {
         try {
@@ -45,6 +48,7 @@ class UsersController(private val userService: UserService) {
         }
     }
 
+    @PreAuthorize("#id == authentication.principal.getId()")
     @DeleteMapping("/{id}")
     fun deleteUser(@PathVariable id: Int) {
         val result = userService.delete(id)
