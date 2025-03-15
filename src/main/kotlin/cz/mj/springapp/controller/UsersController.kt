@@ -1,9 +1,11 @@
 package cz.mj.springapp.controller
 
 import cz.mj.springapp.dto.UserDto
+import cz.mj.springapp.dto.UserUpdateDto
 import cz.mj.springapp.service.UserService
 import jakarta.validation.Valid
 import org.jooq.exception.NoDataFoundException
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -32,11 +34,15 @@ class UsersController(private val userService: UserService) {
             throw UserNotCreatedException("Nepodařilo se vytvořit uživatele")
     }
 
-    @PutMapping
-    fun putUser(@RequestBody @Valid user: UserDto) {
-        val res = userService.update(user)
-        if (res != 1)
-            throw UserNotFoundException("Uživatel nenalezen")
+    @PutMapping("/{id}")
+    fun putUser(@PathVariable id: Int, @RequestBody @Valid user: UserUpdateDto) {
+        try {
+            val res = userService.update(id, user)
+            if (res != 1)
+                throw UserNotFoundException("Uživatel nenalezen")
+        } catch (e: DuplicateKeyException) {
+            throw UserDuplicateNameException("Uživatel se stejným uživatelským jménem již existuje", e)
+        }
     }
 
     @DeleteMapping("/{id}")

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 
 class UserNotFoundException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
 class UserNotCreatedException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
+class UserDuplicateNameException(message: String? = null, cause: Throwable? = null) : Exception(message, cause)
 
 @ControllerAdvice
 class GlobalControllerExceptionHandler {
@@ -19,7 +20,7 @@ class GlobalControllerExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(UserNotFoundException::class, UserNotCreatedException::class)
+    @ExceptionHandler(UserNotFoundException::class, UserNotCreatedException::class, UserDuplicateNameException::class)
     @ResponseBody
     fun userNotFoundExceptionHandler(e: Exception): String? = e.message
 
